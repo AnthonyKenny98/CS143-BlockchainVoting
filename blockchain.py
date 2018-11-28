@@ -14,7 +14,7 @@ class Blockchain:
         blocks -- set of blocks that make up the blockchain
     """
 
-    def __init__(self, blocks):
+    def __init__(self, blocks=[]):
         # Remove duplicates
         initpool = set(blocks)
         lastapproved = frozenset(blocks)
@@ -63,33 +63,13 @@ class Blockchain:
         else:
             return False
 
-    def verify(self, block):
-        """Check that a particular block can be added to the chain by
-        verifying all of the votes in the block.
-        """
+    def block(self, hash_):
+        """Find a block in the blockchain by its hash."""
 
-        prevhash = block.prev
-        voters = frozenset(map(lambda v: v.voter, block.votes))
-
-        # Check for bad votes (e.g. double votes)
-        if prevhash == None or len(voters) != len(block.votes):
-            return False
-
-        while prevhash != None:
-            # Identify the previous block in the blockchain
-            prevblock = filter(
-                lambda b: hash(b) == prevhash,
-                self.blocks
-            )[0]
-            prevvoters = frozenset(map(lambda v: v.voter, prevblock.votes))
-
-            # Check for bad votes
-            if prevvoters - voters != prevvoters:
-                return False
-
-            prevhash = prevblock.prev
-
-        return True
+        try:
+            return filter(lambda b: hash(b) == hash_, self.blocks)[0]
+        except IndexError:
+            return None
 
     def depth(self, block):
         """Calculate the depth of the specified block if it exists in the
@@ -111,7 +91,38 @@ class Blockchain:
             prevhash = prevblock.prev
             depth += 1
 
+        return depth
+
     def last(self):
         """Get the block at the end of the longest chain."""
 
-        return max(self.blocks, key=self.depth)
+        try:
+            return max(self.blocks, key=self.depth)
+        except ValueError:
+            return None
+
+    def verify(self, block):
+        """Check that a particular block can be added to the chain by
+        verifying all of the votes in the block.
+        """
+
+        prevhash = block.prev
+        voters = frozenset(map(lambda v: v.voter, block.votes))
+
+        # Check for bad votes (e.g. double votes)
+        if prevhash == None or len(voters) != len(block.votes):
+            return False
+
+        while prevhash != None:
+            # Identify the previous block in the blockchain
+            prevblock = self.block(prevhash)
+            prevvoters = frozenset(map(lambda v: v.voter, prevblock.votes))
+
+            # Check for bad votes
+            if prevvoters - voters != prevvoters:
+                return False
+
+            prevhash = prevblock.prev
+
+        return True
+

@@ -65,8 +65,11 @@ class TestBlockchain(unittest.TestCase):
     def test_init(self):
         """Ensure that the constructor only allows users to create valid
         blockchains.
+
+        This test also tests the add, block, and verify functions.
         """
 
+        self.assertTrue(isinstance(Blockchain(), Blockchain))
         self.assertTrue(isinstance(Blockchain([self.b1]), Blockchain))
         self.assertTrue(isinstance(Blockchain([self.b1, self.b1]), Blockchain))
         self.assertTrue(
@@ -88,6 +91,27 @@ class TestBlockchain(unittest.TestCase):
             Blockchain([self.b1, self.b5])
         with self.assertRaises(InvalidBlockchain):
             Blockchain([self.b1, self.b3, self.b4, self.b7])
+
+    def test_depth(self):
+        chain = Blockchain([self.b1, self.b3, self.b4, self.b6])
+        self.assertEqual(chain.depth(self.b1), 0)
+        self.assertEqual(chain.depth(self.b3), 1)
+        self.assertEqual(chain.depth(self.b4), 1)
+        self.assertEqual(chain.depth(self.b6), 2)
+
+    def test_last(self):
+        c1 = Blockchain()
+        c2 = Blockchain([self.b1])
+        c3 = Blockchain([self.b1, self.b1])
+        c4 = Blockchain([self.b1, self.b3, self.b3])
+        c5 = Blockchain([self.b1, self.b3, self.b6])
+        c6 = Blockchain([self.b1, self.b3, self.b4, self.b6])
+        self.assertEqual(c1.last(), None)
+        self.assertEqual(c2.last(), self.b1)
+        self.assertEqual(c3.last(), self.b1)
+        self.assertEqual(c4.last(), self.b3)
+        self.assertEqual(c5.last(), self.b6)
+        self.assertEqual(c6.last(), self.b6)
 
 if __name__ == '__main__':
     unittest.main()
