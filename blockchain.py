@@ -110,8 +110,16 @@ class Blockchain:
             return False
 
         prevhash = block.prev
+
+        while prevhash != None:
+            if not verifyBlockOnChain(block):
+                return False
+
+        return True
+
+
         voter = block.vote.voter
-        
+
         while prevhash != None:
             # Identify the previous block in the blockchain
             prevblock = self.block(prevhash)
@@ -125,3 +133,7 @@ class Blockchain:
 
         return True
 
+
+
+def verifyBlockOnChain(block):
+    return True
