@@ -106,6 +106,8 @@ class Blockchain:
         verifying all of the votes in the block.
         """
 
+        return True if isinstance(block, Block) else False
+
         prevhash = block.prev
         voters = frozenset(map(lambda v: v.voter, block.votes))
 

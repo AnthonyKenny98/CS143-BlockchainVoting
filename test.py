@@ -30,11 +30,11 @@ class TestBlock(unittest.TestCase):
     def setUp(self):
         """Set up five blocks to test against one another."""
 
-        self.b1 = Block([on['mc'], ak['rk']], None)
-        self.b2 = Block([on['mc'], ak['rk']], hash(self.b1))
-        self.b3 = Block([on['mc'], ak['rk']], hash(self.b2))
-        self.b4 = Block([on['mc'], ak['rk']], hash(self.b2))
-        self.b5 = Block([on['mc'], ab['rk']], hash(self.b2))
+        self.b1 = Block(on['mc'], None)
+        self.b2 = Block(on['mc'], hash(self.b1))
+        self.b3 = Block(on['mc'], hash(self.b2))
+        self.b4 = Block(on['mc'], hash(self.b2))
+        self.b5 = Block(on['mc'], hash(self.b2))
 
     def test_hash(self):
         """Ensure that the only time that two blocks have the same hash is when
@@ -55,13 +55,13 @@ class TestBlockchain(unittest.TestCase):
         valid and invalid blockchains.
         """
 
-        self.b1 = Block([on['jy']], None)
-        self.b2 = Block([on['mc']], hash(self.b1))
-        self.b3 = Block([ab['jy']], hash(self.b1))
-        self.b4 = Block([ab['mc']], hash(self.b1))
-        self.b5 = Block([ab['rk'], ab['mc']], hash(self.b1))
-        self.b6 = Block([ak['rk']], hash(self.b3))
-        self.b7 = Block([ak['rk'], on['rk']], hash(self.b3))
+        self.b1 = Block(on['jy'], None)
+        self.b2 = Block(on['mc'], hash(self.b1))
+        self.b3 = Block(ab['jy'], hash(self.b1))
+        self.b4 = Block(ab['mc'], hash(self.b1))
+        self.b5 = Block(ab['rk'], hash(self.b1))
+        self.b6 = Block(ak['rk'], hash(self.b3))
+        self.b7 = Block(ak['rk'], hash(self.b3))
 
     def test_init(self):
         """Ensure that the constructor only allows users to create valid

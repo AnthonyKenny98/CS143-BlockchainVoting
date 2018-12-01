@@ -1,6 +1,15 @@
 import pickle
 import time
 
+from election import Vote
+
+class InvalidBlock(Exception):
+    """Alert the user that the blocks that he has specified to not make up a
+    valid blockchain.
+    """
+
+    pass
+
 class Block:
     """Provide a representation of a singular block in the blockchain.
 
@@ -10,9 +19,11 @@ class Block:
         prev -- the previous block's hash
     """
 
-    def __init__(self, votes, prev):
+    def __init__(self, vote, prev):
         self.time = time.time()
-        self.votes = votes
+        if not isinstance(vote, Vote):
+            raise InvalidBlock
+        self.vote = vote
         self.prev = prev
 
     def __hash__(self):
@@ -27,10 +38,10 @@ class Block:
         return self.prev
 
     @property
-    def votes(self):
+    def vote(self):
         """Return the votes recorded within the block."""
 
-        return self.votes
+        return self.vote
 
     @property
     def time(self):
