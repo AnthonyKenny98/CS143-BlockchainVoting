@@ -50,4 +50,7 @@ class Block:
         return self.time
 
 
+def verifyBlock(block):
+    # TODO
 
+    return True

@@ -1,4 +1,4 @@
-from block import Block
+from block import Block, verifyBlock
 
 class InvalidBlockchain(Exception):
     """Alert the user that the blocks that he has specified to not make up a
@@ -106,22 +106,19 @@ class Blockchain:
         verifying all of the votes in the block.
         """
 
-        return True if isinstance(block, Block) else False
-
-        prevhash = block.prev
-        voters = frozenset(map(lambda v: v.voter, block.votes))
-
-        # Check for bad votes (e.g. double votes)
-        if prevhash == None or len(voters) != len(block.votes):
+        if not verifyBlock(block):
             return False
 
+        prevhash = block.prev
+        voter = block.vote.voter
+        
         while prevhash != None:
             # Identify the previous block in the blockchain
             prevblock = self.block(prevhash)
-            prevvoters = frozenset(map(lambda v: v.voter, prevblock.votes))
+            prevvoter = prevblock.vote.voter
 
             # Check for bad votes
-            if prevvoters - voters != prevvoters:
+            if voter == prevvoter:
                 return False
 
             prevhash = prevblock.prev
