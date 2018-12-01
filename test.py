@@ -1,25 +1,35 @@
 import unittest
 
 from block import Block
-from election import Vote
+from election import Vote, Voter, Candidate
 from blockchain import Blockchain, InvalidBlockchain
 
+# Voters
+Amany   = Voter("Amany")
+Anthony = Voter("Anthony")
+Owen    = Voter("Owen")
+
+# Candidates
+James  = Candidate("James")
+Marcus = Candidate("Marcus")
+Ronny  = Candidate("Ronny")
+
 ab = {
-    'jy': Vote('Amany', 'James'),
-    'mc': Vote('Amany', 'Marcus'),
-    'rk': Vote('Amany', 'Ronny')
+    'jy': Vote(Amany, James),
+    'mc': Vote(Amany, Marcus),
+    'rk': Vote(Amany, Ronny)
 }
 
 ak = {
-    'jy': Vote('Anthony', 'James'),
-    'mc': Vote('Anthony', 'Marcus'),
-    'rk': Vote('Anthony', 'Ronny')
+    'jy': Vote(Anthony, James),
+    'mc': Vote(Anthony, Marcus),
+    'rk': Vote(Anthony, Ronny)
 }
 
 on = {
-    'jy': Vote('Owen', 'James'),
-    'mc': Vote('Owen', 'Marcus'),
-    'rk': Vote('Owen', 'Ronny')
+    'jy': Vote(Owen, James),
+    'mc': Vote(Owen, Marcus),
+    'rk': Vote(Owen, Ronny)
 }
 
 
