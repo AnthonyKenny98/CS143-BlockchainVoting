@@ -1,16 +1,19 @@
+class Election:
+	""" Represents the election that is being run."""
 
+	def __init__(self, candidates):
+		self.candidates = candidates
+	
 
 class Candidate:
 	""" Represents a candidate that can be voted for."""
 	
-	def __init__(self, name, party=None):
+	def __init__(self, name):
 		"""Create a new candidate. Contains:
 			name
-			party (optional)
 		"""
 		
 		self.name = name
-		self.party = party
 
 	def __repr__(self):
 		return self.name
