@@ -1,11 +1,11 @@
-class Election:
+class Election(object):
 	""" Represents the election that is being run."""
 
 	def __init__(self, candidates):
 		self.candidates = candidates
 	
 
-class Candidate:
+class Candidate(object):
 	""" Represents a candidate that can be voted for."""
 	
 	def __init__(self, name):
@@ -19,7 +19,7 @@ class Candidate:
 		return self.name
 	
 
-class Voter:
+class Voter(object):
 	""" Represents an eligible voter """
 
 	def __init__(self, name):

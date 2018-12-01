@@ -7,7 +7,7 @@ class InvalidBlockchain(Exception):
 
     pass
 
-class Blockchain:
+class Blockchain(object):
     """Store a sort of linked list of Block objects in a set.
 
     Attributes:
@@ -25,7 +25,7 @@ class Blockchain:
         while len(initpool) > 0:
             if len(self.blocks) == 0:
                 # Find the genesis block
-                geneses = filter(lambda b: b.prev == None, initpool)
+                geneses = list(filter(lambda b: b.prev == None, initpool))
 
                 if len(geneses) != 1 or self.add(geneses[0]) == False:
                     # There must be exactly one genesis block
@@ -35,7 +35,7 @@ class Blockchain:
                 initpool.discard(geneses[0])
             else:
                 candidates = frozenset(
-                    filter(lambda b: b.prev in lastapproved, initpool)
+                    list(filter(lambda b: b.prev in lastapproved, initpool))
                 )
 
                 if len(candidates) < 1:
@@ -67,7 +67,7 @@ class Blockchain:
         """Find a block in the blockchain by its hash."""
 
         try:
-            return filter(lambda b: hash(b) == hash_, self.blocks)[0]
+            return list(filter(lambda b: hash(b) == hash_, self.blocks))[0]
         except IndexError:
             return None
 
@@ -82,10 +82,10 @@ class Blockchain:
 
         while prevhash != None:
             # Find the previous block in the blockchain
-            prevblock = filter(
+            prevblock = list(filter(
                 lambda b: hash(b) == prevhash,
                 self.blocks
-            )[0]
+            ))[0]
 
             # Increment depth counter
             prevhash = prevblock.prev
@@ -112,26 +112,28 @@ class Blockchain:
         prevhash = block.prev
 
         while prevhash != None:
+            prevblock = self.block(prevhash)
             if not verifyBlockOnChain(block):
                 return False
-
-        return True
-
-
-        voter = block.vote.voter
-
-        while prevhash != None:
-            # Identify the previous block in the blockchain
-            prevblock = self.block(prevhash)
-            prevvoter = prevblock.vote.voter
-
-            # Check for bad votes
-            if voter == prevvoter:
-                return False
-
             prevhash = prevblock.prev
 
         return True
+
+
+        # voter = block.vote.voter
+
+        # while prevhash != None:
+        #     # Identify the previous block in the blockchain
+        #     prevblock = self.block(prevhash)
+        #     prevvoter = prevblock.vote.voter
+
+        #     # Check for bad votes
+        #     if voter == prevvoter:
+        #         return False
+
+        #     prevhash = prevblock.prev
+
+        # return True
 
 
 

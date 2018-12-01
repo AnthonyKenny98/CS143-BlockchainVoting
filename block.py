@@ -10,7 +10,7 @@ class InvalidBlock(Exception):
 
     pass
 
-class Block:
+class Block(object):
     """Provide a representation of a singular block in the blockchain.
 
     Attributes:
@@ -31,23 +31,9 @@ class Block:
 
         return hash(pickle.dumps(self))
 
-    @property
-    def prev(self):
-        """Return the previous block's hash."""
-
-        return self.prev
-
-    @property
-    def vote(self):
-        """Return the votes recorded within the block."""
-
-        return self.vote
-
-    @property
-    def time(self):
-        """Return the time at which this block was created."""
-
-        return self.time
+    @staticmethod
+    def isValidChain():
+        return True
 
 
 def verifyBlock(block):
