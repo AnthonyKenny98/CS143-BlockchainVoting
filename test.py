@@ -1,6 +1,7 @@
 import unittest
 
-from base import Block, Vote
+from block import Block
+from election import Vote
 from blockchain import Blockchain, InvalidBlockchain
 
 ab = {

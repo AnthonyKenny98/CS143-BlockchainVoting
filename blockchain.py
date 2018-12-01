@@ -1,4 +1,4 @@
-from base import Block, Vote
+from block import Block
 
 class InvalidBlockchain(Exception):
     """Alert the user that the blocks that he has specified to not make up a
