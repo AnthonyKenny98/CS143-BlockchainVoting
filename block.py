@@ -1,5 +1,6 @@
 import pickle
 import time
+from hashlib import sha224
 
 from election import Vote
 
@@ -24,6 +25,7 @@ class Block(object):
             self.time = time.time()
             self.vote = vote
             self.prev = prev
+            self.nonce = 0
         else:
             raise InvalidBlock
 
@@ -38,5 +40,6 @@ class Block(object):
 
     @staticmethod
     def isValidBlock(block):
-        #TODO
+        
+        #### TODO: some check of block validity - not sure what this should be
         return True

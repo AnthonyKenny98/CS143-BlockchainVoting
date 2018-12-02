@@ -4,7 +4,7 @@ from network import Network
 from random import randint, choice
 
 nCandidates = 3
-nVoters = 10
+nVoters = 20
 nNodes = 5
 
 candidates = [Candidate("Candidate %s" % i) for i in range(nCandidates)]

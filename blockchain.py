@@ -13,31 +13,49 @@ class Blockchain(object):
     """Store a sort of linked list of Block objects in a set.
 
     Attributes:
+        creation time -- time chain was initialized
         blocks -- set of blocks that make up the blockchain
     """
+
+    difficulty = 2
 
     def __init__(self, blocks=[]):
         self.creationTime = time.time()
         self.blocks = set()
         self.createGenesisBlock()
 
+
     def createGenesisBlock(self):
+        """ Creates a genesis block with a None Vote."""
         genesisBlock = Block(None, None)
         if Block.isValidBlock(genesisBlock):
             self.blocks.add(genesisBlock)
 
-    def add(self, block):
+    def addBlock(self, block, proof=""):
         """Add a block to the blockchain and return True if successful, False if
         unsuccessful.
+
+        Should go through the following logic:
+
+            * The previous_hash referred in the block and the hash of latest block
+            in the chain match.
+            * The submitted proof is valid
+            * Extra checks specific to election implementation
         """
 
-        #TODO more robust add function
+        prevHash = hash(self.last)
 
-        if self.verify(block) or (len(self.blocks) == 0 and block.prev == None):
-            self.blocks.add(block)
-            return True
-        else:
+        if prevHash != block.prev:
             return False
+
+        if not Blockchain.isValidProof(block, proof):
+            return False
+
+        # TODO: Add more election checks of validity
+
+        self.blocks.add(block)
+        return True
+
 
     def block(self, hash_):
         """Find a block in the blockchain by its hash."""
@@ -69,42 +87,6 @@ class Blockchain(object):
 
         return depth
 
-    def verify(self, block):
-        """Check that a particular block can be added to the chain by
-        verifying all of the votes in the block.
-        """
-
-        if not Block.isValidBlock(block):
-            return False
-
-        prevhash = block.prev
-
-
-        #SOMEHTING WRONG HERE
-        while prevhash is not None:
-            prevblock = self.block(prevhash)
-            if not verifyBlockOnChain(block):
-                return False
-            prevhash = prevblock.prev
-
-        return True
-
-
-        # voter = block.vote.voter
-
-        # while prevhash != None:
-        #     # Identify the previous block in the blockchain
-        #     prevblock = self.block(prevhash)
-        #     prevvoter = prevblock.vote.voter
-
-        #     # Check for bad votes
-        #     if voter == prevvoter:
-        #         return False
-
-        #     prevhash = prevblock.prev
-
-        # return True
-
     @property
     def last(self):
         """Get the block at the end of the longest chain."""
@@ -121,10 +103,20 @@ class Blockchain(object):
         return self.depth(self.last)
 
     @staticmethod
+    def proofOfWork(block):
+        blockHash = str(hash(block))
+        while not blockHash.startswith('1' * Blockchain.difficulty):
+            block.nonce += 1
+            blockHash = str(hash(block))
+        return blockHash
+
+    @staticmethod
+    def isValidProof(block, proof):
+        return (str(proof).startswith('1' * Blockchain.difficulty)) and \
+            (str(proof) == str(hash(block)))
+
+    @staticmethod
     def isValidChain(chain):
 
         #TODO
         return True
-
-def verifyBlockOnChain(block):
-    return True
