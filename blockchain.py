@@ -101,6 +101,9 @@ class Blockchain(object):
         except ValueError:
             return None
 
+    def length(self):
+        return self.depth(self.last)
+
     def verify(self, block):
         """Check that a particular block can be added to the chain by
         verifying all of the votes in the block.
@@ -135,7 +138,11 @@ class Blockchain(object):
 
         # return True
 
+        @staticmethod
+        def isValidChain(chain):
 
+            #TODO
+            return True
 
 def verifyBlockOnChain(block):
     return True

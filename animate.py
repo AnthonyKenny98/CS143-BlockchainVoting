@@ -3,7 +3,8 @@ from matplotlib.animation import FuncAnimation
 
 from network import simpleSimulation
 
-class Animation(object):
+
+class OldAnimation(object):
 
 	def __init__(self, states, xlim=(0,10), ylim=(0,10)):
 		
