@@ -61,7 +61,8 @@ class Blockchain(object):
         if not Blockchain.isValidProof(block, proof):
             return False
 
-        # TODO: Add more election checks of validity
+        if not Blockchain.noDuplicateVoters(self, block):
+            return False
 
         self.blocks.append(block)
         return True
@@ -140,3 +141,17 @@ class Blockchain(object):
                 break
             previousHash = hash(block)
         return result
+
+    @staticmethod
+    def noDuplicateVoters(chain, block=None):
+
+        voters = [] if block is None else [block.vote.voter]
+        
+        prevHash = hash(chain.last)
+        block = chain.block(prevHash)
+        while block.vote is not None:
+            if block.vote.voter in voters:
+                return False
+            voters.append(block.vote.voter)
+            block = chain.block(block.prev)
+        return True

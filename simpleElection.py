@@ -54,12 +54,33 @@ class SimpleElection(unittest.TestCase):
     		for j in range(self.nNodes):
     			if i != j:
 		    		self.assertEqual(self.network.nodes[i].chain, self.network.nodes[j].chain)
-		    		print("{} == {}".format(self.network.nodes[i], self.network.nodes[j]))
+		    		print("{} == {} with Length: {}".format(self.network.nodes[i], self.network.nodes[j], self.network.nodes[i].chain.length))
 
     	print("\nTEST 2 PASSED\n=============")
     	print("{} votes successfully cast".format(self.nVoters))
     	print("All nodes have equal chains\n".format(self.nVoters))
 
+    def test_duplicateVoters(self):
+
+        for voter in self.voters:
+            node = self.network.nodes[randint(0,self.nNodes-1)]
+            candidate = choice(self.candidates)
+            vote = Vote(voter, candidate)
+            print("{} goes to node {} and chooses to vote for candidate {}".format(voter, node, candidate))
+
+            self.assertEqual(node.castVote(vote), True)
+
+        duplicateVoter = self.voters[0]
+        node = self.network.nodes[randint(0,self.nNodes-1)]
+        candidate = choice(self.candidates)
+        vote = Vote(voter, candidate)
+
+        print("\n\n\nNow {} goes to node {} and attempts to vote again, now for candidate {}".format(duplicateVoter, node, candidate))
+
+        self.assertEqual(node.castVote(vote), False)
+
+        print("\nTEST 3 PASSED\n=============")
+        print("{} attempted to duplicate vote but node disallowed due to invalid blockchain".format(duplicateVoter))
 
 if __name__ == '__main__':
     unittest.main()
