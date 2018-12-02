@@ -1,17 +1,18 @@
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
+from network import simpleSimulation
+
 class Animation(object):
 
-	def __init__(self, states, xlim=(0,100), ylim=(0,100)):
+	def __init__(self, states, xlim=(0,10), ylim=(0,10)):
 		
 		self.xlim = xlim
 		self.ylim = ylim
-		self.frames = [(0,50),(25,50),(50,50),(75,50),(100,50)]
-
+		self.frames = states
 		self.fig, self.ax = plt.subplots()
 		self.ln, = plt.plot([], [], 'ro', animated=True)
-
+		self.xdata, self.ydata = [], []
 		
 
 	def runAnimation(self):
@@ -22,9 +23,14 @@ class Animation(object):
 			    return self.ln,
 
 		def update(frame):
-		    xdata = [frame[0]]
-		    ydata = [frame[1]]
-		    self.ln.set_data(xdata, ydata)
+		    node, length = frame
+		    if node not in self.ydata:
+		    	self.ydata.append(node)
+		    	self.xdata.append(length)
+		    else:
+		    	i = self.ydata.index(node)
+		    	self.xdata[i] = length
+		    self.ln.set_data(self.xdata, self.ydata)
 		    return self.ln,
 
 		ani = FuncAnimation(self.fig, update, frames=self.frames,
@@ -33,7 +39,7 @@ class Animation(object):
 
 		
 
-states = [[0]*10, [1]*10, [2]*10]
+states = simpleSimulation()
 A = Animation(states)
 A.runAnimation()
 

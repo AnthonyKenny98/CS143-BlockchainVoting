@@ -1,3 +1,5 @@
+from copy import copy
+
 class Chain(object):
 
 	def __init__(self, length):
@@ -11,13 +13,31 @@ class Chain(object):
 	def isValidChain(chain):
 		return True
 
+class Network(object):
+
+	def __init__(self):
+		self.nodes = []
+
+	def addNode(self):
+		newNode = Node(len(self.nodes), copy(self.nodes))
+		for node in self.nodes:
+			node.peers.append(newNode)
+		self.nodes.append(newNode)
+		
+	def getLengths(self):
+		lengths = []
+		for node in self.nodes:
+			lengths.append((node.index, node.chain.length))
+		return lengths
+
+
 class Node(object):
 
-	def __init__(self, index):
+	def __init__(self, index, peers):
 		self.index = index
 		self.name = "N{}".format(self.index)
 		self.chain = Chain(0)
-		self.peers = []
+		self.peers = peers
 
 	def __repr__(self):
 		return "node: {}, length: {}".format(self.name, self.chain.length)
@@ -46,21 +66,20 @@ class Node(object):
 
 
 def simpleSimulation():
+	n=10
+
+	# init Network
+	N = Network()
+
 	# create nodes
+	for _ in range(n):
+		N.addNode()
+	assert len(N.nodes) == n
 	
-	frames = []
-	n = 10
-	nodes = [Node(i) for i in range(n)]
-	assert len(nodes) == n
-	
-	# add peers to each node
-	for node in nodes:
-		node.peers = list(filter(lambda x: x is not node,nodes))
+	for node in N.nodes:
 		assert len(node.peers) == n-1
 
-	nodes[0].addBlock()
-	for node in nodes:
-		assert node.chain.length == 1
+	# nodes[0].addBloc8
 
 if __name__ == '__main__':
 	
