@@ -2,15 +2,13 @@ from blockchain import Blockchain
 from block import Block
 from election import Vote, Voter, Candidate
 
-class Node(object):
+class BaseNode(object):
 
 	def __init__(self, index, network):
 		self.index = index
 		self.name = "N{}".format(self.index)
 		self.chain = Blockchain()
 		self.network = network
-		
-		#### TODO: update nodes chain when node first joins network if there are other nodes in network
 		if len(network.nodes) > 0:
 			self.announceNewNode()
 
@@ -23,12 +21,7 @@ class Node(object):
 		newNode.consensus(self.chain)
 
 	def castVote(self, vote):
-		block = Block(vote, hash(self.chain.last))
-		proof = Blockchain.proofOfWork(block)
-		if self.chain.addBlock(block, proof):
-			self.announceNewBlock()
-			return True
-		return False
+		pass
 		
 	def announceNewBlock(self):
 		for peer in self.network.nodes:
@@ -43,6 +36,35 @@ class Node(object):
 			return True
 		return False
 
-
 	def __repr__(self):
 		return self.name
+
+class Node(BaseNode):
+	""" Node that acts with best intentions and upholds the blockchain """
+
+	def __init__(self, index, network):
+		BaseNode.__init__(self, index, network)
+		
+
+	def castVote(self, vote):
+		block = Block(vote, hash(self.chain.last))
+		proof = Blockchain.proofOfWork(block)
+		if self.chain.addBlock(block, proof):
+			self.announceNewBlock()
+			return True
+		return False		
+		
+
+class NaughtyNode(BaseNode):
+	""" Node that acts with malicious intentions and attempts to break the blockchain """
+
+	def __init__(self, index, network):
+		BaseNode.__init__(self, index, network)
+
+	def castVote(self, vote):
+		block = Block(vote, hash(self.chain.last))
+		proof = Blockchain.proofOfWork(block)
+		if self.chain.addBlock(block, proof):
+			self.announceNewBlock()
+			return True
+		return False	

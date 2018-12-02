@@ -21,8 +21,7 @@ class SimpleElection(unittest.TestCase):
     		self.network.addNode()
 
     def test_ElectionSetup(self):
-        """Ensure that the only time that two blocks have the same hash is when
-        the two blocks are the same block (i.e. all attributes are the same).
+        """
         """
 
         print("\n\n#### TEST SETUP OF SIMPLE ELECTION ####\n")

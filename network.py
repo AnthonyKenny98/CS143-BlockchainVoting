@@ -2,7 +2,7 @@ import time
 from copy import copy
 from random import randint
 
-from nodeServer import Node
+from nodeServer import Node, NaughtyNode
 
 
 class Network(object):
