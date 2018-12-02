@@ -2,28 +2,10 @@ import time
 from copy import copy
 from random import randint
 
-import networkx as nx
-from networkgraph import plot
-
 from blockchain import Blockchain
 from block import Block
 from election import Vote, Voter, Candidate
 
-
-class Chain(object):
-
-	def __init__(self, length):
-		self.length = length
-		self.blocks = [1]
-
-	def add(self):
-		self.length += 1
-		self.blocks.append(self.blocks[-1] + 1)
-		return True
-
-	@staticmethod
-	def isValidChain(chain):
-		return True
 
 class Network(object):
 
