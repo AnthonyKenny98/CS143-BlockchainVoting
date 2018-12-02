@@ -7,7 +7,7 @@ class Node(object):
 	def __init__(self, index, network):
 		self.index = index
 		self.name = "N{}".format(self.index)
-		self.chain = None
+		self.chain = Blockchain()
 		self.network = network
 		
 		# TODO: update nodes chain when node first joins network if there are other nodes in network
@@ -20,7 +20,7 @@ class Node(object):
 		if self.chain == None:
 			block = Block(vote, None)
 		else:
-			block = Block(vote, hash(self.chain.last()))
+			block = Block(vote, hash(self.chain.last))
 		self.addBlock(block)
 
 
@@ -45,8 +45,8 @@ class Node(object):
 	def consensus(self, chain):
 		
 		# TODO: better consensus - i think this is where proof of work check goes
-		newLength = chain.length()
-		currentLength = 0 if self.chain == None else self.chain.length()
+		newLength = chain.length
+		currentLength = 0 if self.chain == None else self.chain.length
 		if newLength > currentLength and Blockchain.isValidChain(chain):
 			self.chain = chain
 			return True

@@ -20,11 +20,12 @@ class Block(object):
     """
 
     def __init__(self, vote, prev):
-        self.time = time.time()
-        if not isinstance(vote, Vote):
+        if isinstance(vote, Vote) or isinstance(vote, type(None)):
+            self.time = time.time()
+            self.vote = vote
+            self.prev = prev
+        else:
             raise InvalidBlock
-        self.vote = vote
-        self.prev = prev
 
     def __hash__(self):
         """Override the built in hash function."""

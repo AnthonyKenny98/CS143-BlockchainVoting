@@ -4,7 +4,7 @@ from network import Network
 from random import randint, choice
 
 nCandidates = 3
-nVoters = 20
+nVoters = 10
 nNodes = 5
 
 candidates = [Candidate("Candidate %s" % i) for i in range(nCandidates)]
@@ -33,6 +33,6 @@ for voter in voters:
 	node.castVote(vote)
 
 for node in network.nodes:
-	print("{} last block is {} and is {} long".format(node, node.chain.last(), node.chain.length()))
+	print("{} last block is {} and is {} long".format(node, node.chain.last, node.chain.length))
 
 print("\n\n")

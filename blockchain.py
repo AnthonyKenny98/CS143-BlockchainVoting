@@ -1,5 +1,7 @@
 from block import Block
 
+import time
+
 class InvalidBlockchain(Exception):
     """Alert the user that the blocks that he has specified to not make up a
     valid blockchain.
@@ -15,47 +17,21 @@ class Blockchain(object):
     """
 
     def __init__(self, blocks=[]):
-        # Remove duplicates
-        initpool = set(blocks)
-        lastapproved = frozenset(blocks)
-
-        # Store the hashes of the last batch of approved blocks
+        self.creationTime = time.time()
         self.blocks = set()
+        self.createGenesisBlock()
 
-        while len(initpool) > 0:
-            if len(self.blocks) == 0:
-                # Find the genesis block
-                geneses = list(filter(lambda b: b.prev == None, initpool))
-
-                if len(geneses) != 1 or self.add(geneses[0]) == False:
-                    # There must be exactly one genesis block
-                    raise InvalidBlockchain
-
-                lastapproved = frozenset(map(hash, geneses))
-                initpool.discard(geneses[0])
-            else:
-                candidates = frozenset(
-                    list(filter(lambda b: b.prev in lastapproved, initpool))
-                )
-
-                if len(candidates) < 1:
-                    # None of the other blocks fit into the chain
-                    raise InvalidBlockchain
-
-                # Attempt to add the newly-approved blocks to the blockchain
-                status = map(self.add, candidates)
-
-                if False in status:
-                    # Votes in every block must be verified
-                    raise InvalidBlockchain
-
-                lastapproved = frozenset(map(hash, candidates))
-                initpool -= candidates
+    def createGenesisBlock(self):
+        genesisBlock = Block(None, None)
+        if Block.isValidBlock(genesisBlock):
+            self.blocks.add(genesisBlock)
 
     def add(self, block):
         """Add a block to the blockchain and return True if successful, False if
         unsuccessful.
         """
+
+        #TODO more robust add function
 
         if self.verify(block) or (len(self.blocks) == 0 and block.prev == None):
             self.blocks.add(block)
@@ -93,19 +69,6 @@ class Blockchain(object):
 
         return depth
 
-    def last(self):
-        """Get the block at the end of the longest chain."""
-
-        try:
-            return max(self.blocks, key=self.depth)
-        except ValueError:
-            return None
-
-    def length(self):
-        
-        # includes the genesis block
-        return self.depth(self.last()) + 1
-
     def verify(self, block):
         """Check that a particular block can be added to the chain by
         verifying all of the votes in the block.
@@ -141,6 +104,21 @@ class Blockchain(object):
         #     prevhash = prevblock.prev
 
         # return True
+
+    @property
+    def last(self):
+        """Get the block at the end of the longest chain."""
+
+        try:
+            return max(self.blocks, key=self.depth)
+        except ValueError:
+            return None
+
+    @property
+    def length(self):
+
+        # Does not include the genesis block
+        return self.depth(self.last)
 
     @staticmethod
     def isValidChain(chain):
