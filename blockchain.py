@@ -1,4 +1,4 @@
-from block import Block, verifyBlock
+from block import Block
 
 class InvalidBlockchain(Exception):
     """Alert the user that the blocks that he has specified to not make up a
@@ -102,19 +102,23 @@ class Blockchain(object):
             return None
 
     def length(self):
-        return self.depth(self.last)
+        
+        # includes the genesis block
+        return self.depth(self.last()) + 1
 
     def verify(self, block):
         """Check that a particular block can be added to the chain by
         verifying all of the votes in the block.
         """
 
-        if not verifyBlock(block):
+        if not Block.isValidBlock(block):
             return False
 
         prevhash = block.prev
 
-        while prevhash != None:
+
+        #SOMEHTING WRONG HERE
+        while prevhash is not None:
             prevblock = self.block(prevhash)
             if not verifyBlockOnChain(block):
                 return False
@@ -138,11 +142,11 @@ class Blockchain(object):
 
         # return True
 
-        @staticmethod
-        def isValidChain(chain):
+    @staticmethod
+    def isValidChain(chain):
 
-            #TODO
-            return True
+        #TODO
+        return True
 
 def verifyBlockOnChain(block):
     return True

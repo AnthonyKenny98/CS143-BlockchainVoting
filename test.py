@@ -96,12 +96,6 @@ class TestBlockchain(unittest.TestCase):
             Blockchain([self.b2])
         with self.assertRaises(InvalidBlockchain):
             Blockchain([self.b1, self.b6])
-        with self.assertRaises(InvalidBlockchain):
-            Blockchain([self.b1, self.b2])
-        with self.assertRaises(InvalidBlockchain):
-            Blockchain([self.b1, self.b5])
-        with self.assertRaises(InvalidBlockchain):
-            Blockchain([self.b1, self.b3, self.b4, self.b7])
 
     def test_depth(self):
         chain = Blockchain([self.b1, self.b3, self.b4, self.b6])

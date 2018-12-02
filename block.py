@@ -31,12 +31,11 @@ class Block(object):
 
         return hash(pickle.dumps(self))
 
+    def __repr__(self):
+        return "BLOCK : [time : {}, vote : {}, prev : {}]".format(self.time, self.vote, self.prev)
+
+
     @staticmethod
-    def isValidChain():
+    def isValidBlock(block):
+        #TODO
         return True
-
-
-def verifyBlock(block):
-    # TODO
-
-    return True
