@@ -17,19 +17,29 @@ class Blockchain(object):
         blocks -- set of blocks that make up the blockchain
     """
 
+    code = '1'
     difficulty = 2
 
-    def __init__(self, blocks=[]):
+    def __init__(self):
         self.creationTime = time.time()
-        self.blocks = set()
+        self.blocks = []
         self.createGenesisBlock()
 
+    def __repr__(self):
+        lastBlock = self.last
+        chain = [lastBlock.vote]
+        prevHash = lastBlock.prev
+        while prevHash is not None:
+            prevBlock = self.block(prevHash)
+            chain = [prevBlock.vote] + chain
+            prevHash = prevBlock.prev
+        return str(chain)
 
     def createGenesisBlock(self):
         """ Creates a genesis block with a None Vote."""
         genesisBlock = Block(None, None)
         if Block.isValidBlock(genesisBlock):
-            self.blocks.add(genesisBlock)
+            self.blocks.append(genesisBlock)
 
     def addBlock(self, block, proof=""):
         """Add a block to the blockchain and return True if successful, False if
@@ -53,7 +63,7 @@ class Blockchain(object):
 
         # TODO: Add more election checks of validity
 
-        self.blocks.add(block)
+        self.blocks.append(block)
         return True
 
 
@@ -105,18 +115,28 @@ class Blockchain(object):
     @staticmethod
     def proofOfWork(block):
         blockHash = str(hash(block))
-        while not blockHash.startswith('1' * Blockchain.difficulty):
+        while not blockHash.startswith(Blockchain.code * Blockchain.difficulty):
             block.nonce += 1
             blockHash = str(hash(block))
         return blockHash
 
     @staticmethod
     def isValidProof(block, proof):
-        return (str(proof).startswith('1' * Blockchain.difficulty)) and \
+        return (str(proof).startswith(Blockchain.code * Blockchain.difficulty)) and \
             (str(proof) == str(hash(block)))
 
     @staticmethod
     def isValidChain(chain):
 
-        #TODO
-        return True
+        result = True
+        previousHash = None
+
+        for block in chain.blocks:
+            block_hash = hash(block)
+
+            if (previousHash != block.prev) or \
+                not Blockchain.isValidProof(block, hash(block)) and block.prev != None:
+                result = False
+                break
+            previousHash = hash(block)
+        return result

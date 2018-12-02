@@ -13,3 +13,7 @@ class Network(object):
 	def addNode(self):
 		newNode = Node(len(self.nodes), self)
 		self.nodes.append(newNode)
+
+	def addNaughtyNode(self):
+		newNode = NaughtyNode(len(self.nodes), self)
+		self.nodes.append(newNode)

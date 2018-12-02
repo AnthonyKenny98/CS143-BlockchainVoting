@@ -8,7 +8,6 @@ class InvalidBlock(Exception):
     """Alert the user that the blocks that he has specified to not make up a
     valid blockchain.
     """
-
     pass
 
 class Block(object):
@@ -41,5 +40,4 @@ class Block(object):
     @staticmethod
     def isValidBlock(block):
         
-        #### TODO: some check of block validity - not sure what this should be
         return True
