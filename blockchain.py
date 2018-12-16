@@ -1,4 +1,6 @@
-from base import Block, Vote
+from block import Block
+
+import time
 
 class InvalidBlockchain(Exception):
     """Alert the user that the blocks that he has specified to not make up a
@@ -7,67 +9,70 @@ class InvalidBlockchain(Exception):
 
     pass
 
-class Blockchain:
+class Blockchain(object):
     """Store a sort of linked list of Block objects in a set.
 
     Attributes:
+        creation time -- time chain was initialized
         blocks -- set of blocks that make up the blockchain
     """
 
-    def __init__(self, blocks=[]):
-        # Remove duplicates
-        initpool = set(blocks)
-        lastapproved = frozenset(blocks)
+    code = '1'
+    difficulty = 2
 
-        # Store the hashes of the last batch of approved blocks
-        self.blocks = set()
+    def __init__(self):
+        self.creationTime = time.time()
+        self.blocks = []
+        self.createGenesisBlock()
 
-        while len(initpool) > 0:
-            if len(self.blocks) == 0:
-                # Find the genesis block
-                geneses = filter(lambda b: b.prev == None, initpool)
+    def __repr__(self):
+        lastBlock = self.last
+        chain = [lastBlock.vote]
+        prevHash = lastBlock.prev
+        while prevHash is not None:
+            prevBlock = self.block(prevHash)
+            chain = [prevBlock.vote] + chain
+            prevHash = prevBlock.prev
+        return str(chain)
 
-                if len(geneses) != 1 or self.add(geneses[0]) == False:
-                    # There must be exactly one genesis block
-                    raise InvalidBlockchain
+    def createGenesisBlock(self):
+        """ Creates a genesis block with a None Vote."""
+        genesisBlock = Block(None, None)
+        if Block.isValidBlock(genesisBlock):
+            self.blocks.append(genesisBlock)
 
-                lastapproved = frozenset(map(hash, geneses))
-                initpool.discard(geneses[0])
-            else:
-                candidates = frozenset(
-                    filter(lambda b: b.prev in lastapproved, initpool)
-                )
-
-                if len(candidates) < 1:
-                    # None of the other blocks fit into the chain
-                    raise InvalidBlockchain
-
-                # Attempt to add the newly-approved blocks to the blockchain
-                status = map(self.add, candidates)
-
-                if False in status:
-                    # Votes in every block must be verified
-                    raise InvalidBlockchain
-
-                lastapproved = frozenset(map(hash, candidates))
-                initpool -= candidates
-
-    def add(self, block):
+    def addBlock(self, block, proof=""):
         """Add a block to the blockchain and return True if successful, False if
         unsuccessful.
+
+        Should go through the following logic:
+
+            * The previous_hash referred in the block and the hash of latest block
+            in the chain match.
+            * The submitted proof is valid
+            * Extra checks specific to election implementation
         """
 
-        if self.verify(block) or (len(self.blocks) == 0 and block.prev == None):
-            self.blocks.add(block)
-            return True
-        else:
+        prevHash = hash(self.last)
+
+        if prevHash != block.prev:
             return False
+
+        if not Blockchain.isValidProof(block, proof):
+            return False
+
+        if not Blockchain.noDuplicateVoters(self, block):
+            return False
+
+        self.blocks.append(block)
+        return True
+
 
     def block(self, hash_):
         """Find a block in the blockchain by its hash."""
 
         try:
-            return filter(lambda b: hash(b) == hash_, self.blocks)[0]
+            return list(filter(lambda b: hash(b) == hash_, self.blocks))[0]
         except IndexError:
             return None
 
@@ -82,10 +87,10 @@ class Blockchain:
 
         while prevhash != None:
             # Find the previous block in the blockchain
-            prevblock = filter(
+            prevblock = list(filter(
                 lambda b: hash(b) == prevhash,
                 self.blocks
-            )[0]
+            ))[0]
 
             # Increment depth counter
             prevhash = prevblock.prev
@@ -93,6 +98,7 @@ class Blockchain:
 
         return depth
 
+    @property
     def last(self):
         """Get the block at the end of the longest chain."""
 
@@ -101,28 +107,51 @@ class Blockchain:
         except ValueError:
             return None
 
-    def verify(self, block):
-        """Check that a particular block can be added to the chain by
-        verifying all of the votes in the block.
-        """
+    @property
+    def length(self):
 
-        prevhash = block.prev
-        voters = frozenset(map(lambda v: v.voter, block.votes))
+        # Does not include the genesis block
+        return self.depth(self.last)
 
-        # Check for bad votes (e.g. double votes)
-        if prevhash == None or len(voters) != len(block.votes):
-            return False
+    @staticmethod
+    def proofOfWork(block):
+        blockHash = str(hash(block))
+        while not blockHash.startswith(Blockchain.code * Blockchain.difficulty):
+            block.nonce += 1
+            blockHash = str(hash(block))
+        return blockHash
 
-        while prevhash != None:
-            # Identify the previous block in the blockchain
-            prevblock = self.block(prevhash)
-            prevvoters = frozenset(map(lambda v: v.voter, prevblock.votes))
+    @staticmethod
+    def isValidProof(block, proof):
+        return (str(proof).startswith(Blockchain.code * Blockchain.difficulty)) and \
+            (str(proof) == str(hash(block)))
 
-            # Check for bad votes
-            if prevvoters - voters != prevvoters:
+    @staticmethod
+    def isValidChain(chain):
+
+        result = True
+        previousHash = None
+
+        for block in chain.blocks:
+            block_hash = hash(block)
+
+            if (previousHash != block.prev) or \
+                not Blockchain.isValidProof(block, hash(block)) and block.prev != None:
+                result = False
+                break
+            previousHash = hash(block)
+        return result
+
+    @staticmethod
+    def noDuplicateVoters(chain, block=None):
+
+        voters = [] if block is None else [block.vote.voter]
+        
+        prevHash = hash(chain.last)
+        block = chain.block(prevHash)
+        while block.vote is not None:
+            if block.vote.voter in voters:
                 return False
-
-            prevhash = prevblock.prev
-
+            voters.append(block.vote.voter)
+            block = chain.block(block.prev)
         return True
-
