@@ -80,7 +80,22 @@ class SimpleElection(unittest.TestCase):
         self.assertEqual(node.castVote(vote), False)
 
         print("\nTEST 3 PASSED\n=============")
-        print("{} attempted to duplicate vote but node disallowed due to invalid blockchain".format(duplicateVoter))
+        print("{} attempted to duplicate vote \nbut node disallowed".format(duplicateVoter))
+
+    def test_badNode(self):
+
+        self.network.addBadNode()
+
+        for voter in self.voters:
+            node = self.network.nodes[randint(0,self.nNodes-1)]
+            candidate = choice(self.candidates)
+            vote = Vote(voter, candidate)
+            print("{} goes to node {} and chooses to vote for candidate {}".format(voter, node, candidate))
+
+        self.assertNotEqual(self.network.nodes[0], self.network.nodes[-1])
+
+        print("\n\n\nTEST 4 PASSED\n=============")
+        print("All good nodes rejected\ninvalid chain")
 
 if __name__ == '__main__':
     unittest.main()

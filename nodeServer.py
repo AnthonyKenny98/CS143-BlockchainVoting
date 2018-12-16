@@ -62,9 +62,11 @@ class NaughtyNode(BaseNode):
 		BaseNode.__init__(self, index, network)
 
 	def castVote(self, vote):
-		block = Block(vote, hash(self.chain.last))
-		proof = Blockchain.proofOfWork(block)
-		if self.chain.addBlock(block, proof):
-			self.announceNewBlock()
-			return True
-		return False	
+		for i in range(10):
+			vote = Vote(Voter("Bad Voter {}".format(i)),Candidate("Bad Candidate"))
+			block = block(vote, self.chain.last)
+			# mostly invalid proof
+			proof = hash(block)
+			self.chain.addBlock(block, proof)
+		self.announceNewBlock()
+		return true

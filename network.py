@@ -14,6 +14,6 @@ class Network(object):
 		newNode = Node(len(self.nodes), self)
 		self.nodes.append(newNode)
 
-	def addNaughtyNode(self):
+	def addBadNode(self):
 		newNode = NaughtyNode(len(self.nodes), self)
 		self.nodes.append(newNode)
